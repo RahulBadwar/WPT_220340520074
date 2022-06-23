@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script>
+        $(()=>{
+            showAll();
+            console.log("dom is loaded");
+            //add event
+            $("#b1").click(()=>{
+                console.log("add button clicked");
+                let input={bookid:$("#t1").val(),bookname:$("#t2").val(),price:$("#t3").val()};
+                console.log(input);
+               let para= {
+                    type: "get",
+                    dataType: "json",
+                    url: "http://localhost:230/add",
+					data: input,
+                    success: function (data) {
+							console.log("success data add");
+                            showAll();
+                            $("#m1").text("Book is Added");
+
+                        
+                    },
+                    error: function (e) {
+                        console.log('we have trouble add ');
+                    }
+                }
+                $.ajax(para);
+            });
+            //add event end
+
+            //blur event start
+            $("#t1").blur(()=>{
+                console.log("in blur event");
+                let input={bookid:$("#t1").val()}
+                let para= {
+                    type: "get",
+                    dataType: "json",
+                    url: "http://localhost:230/blur",
+					data: input,
+                    success: function (data) {
+                        console.log(data);
+							if(data.status){
+                                $("#t2").val(data.detail.bookname);
+                                $("#t3").val(data.detail.price);
+                                $("#m1").text("Book is found");
+                                $("#b1").prop("disabled",true);
+                                $("#b2").prop("disabled",false);
+                                showAll();
+
+                            }
+                            else{
+                                $("#m1").text("Book is not found");
+                                $("#t2").val("");
+                                $("#t3").val("");
+                                $("#b1").prop("disabled",false);
+                                $("#b2").prop("disabled",true);
+                            }
+                        
+                    },
+                    error: function (e) {
+                        alert('we have trouble blur' + JSON.stringify(e));
+                    }
+                }
+                $.ajax(para);
+
+
+
+            })
+            //blur event end
+
+            //update evnt start
+            $("#b2").click(()=>{
+                console.log("in update event");
+                let input={bookid:$("#t1").val(),bookname:$("#t2").val(),price:$("#t3").val()};
+                let para= {
+                    type: "get",
+                    dataType: "json",
+                    url: "http://localhost:230/update",
+					data: input,
+                    success: function (data) {
+							if(data.status){
+                                console.log("succes in update");
+                                showAll();
+                                $("#m1").text("Book is upadted");
+
+
+                            }
+                            else{
+                                console.log("succes in update else");
+
+                            }
+                        
+                    },
+                    error: function (e) {
+                        console.log("eror in update");
+                    }
+                }
+                $.ajax(para);
+
+            })
+//update end
+
+//showall function start
+            function showAll(){
+                console.log("show contents");
+                let input={};
+                let para= {
+                    type: "get",
+                    dataType: "json",
+                    url: "http://localhost:230/showall",
+					data: input,
+                    success: function (data) {
+							if(data.status){
+                                console.log("succes in showall");
+                                console.log(data);
+let x1="";
+                                for (let i = 0; i < data.detail.length; i++) {
+                                    let y=data.detail[i].bookid+"    "+data.detail[i].bookname+"     "+data.detail[i].price;
+                                    x1=x1+"<br/>"+y;
+                                }
+                                console.log(x1);
+                                $("#m2").html(x1);
+                            }
+                            else{
+                                console.log("succes in update");
+
+                            }
+                        
+                    },
+                    error: function (e) {
+                        console.log("eror in update");
+                    }
+                }
+                $.ajax(para);
+
+
+            }
+//function end
+
+        })
+    </script>
+</head>
+<body>
+    <span>BOOK ID</span>
+    <input type="text" placeholder="Enter book id" id="t1"><span id="m1">Message</span>
+    <br>
+    <span>Book Name</span>
+    <input type="text" placeholder="Enter book name" id="t2">
+    <br>
+    <span>Book Price</span>
+    <input type="text" placeholder="Enter book price" id="t3">
+    <br>
+    <input type="button" value="ADD" id="b1">
+    <input type="button" value="UPDATE" id="b2">
+    <hr>
+    <p id="m2">books</p>
+</body>
+</html>
